@@ -6,7 +6,7 @@ import { ITanstackProviderProps } from './types';
 
 const queryClient = new QueryClient();
 
-const ReactQueryProvider = ({ children }: ITanstackProviderProps) => {
+const TanstackProvider = ({ children }: ITanstackProviderProps) => {
     return (
         <QueryClientProvider client={queryClient}>
             {children}
@@ -14,4 +14,4 @@ const ReactQueryProvider = ({ children }: ITanstackProviderProps) => {
     );
 };
 
-export default ReactQueryProvider;
+export default TanstackProvider;
