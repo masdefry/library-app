@@ -1,26 +1,13 @@
 'use client';
 import {Formik, Form, Field, ErrorMessage} from 'formik';
 import {LoginFormSchema} from '@/features/auth/schemas/LoginFormSchema'
-import {useMutation} from '@tanstack/react-query'
-import axios from 'axios';
-import { ILoginForm } from '@/features/auth/types';
+import { mutateAuthLoginHook } from '@/features/auth/hooks/mutateAuthLoginHook';
 
 export default function HomePage() {
-  
-const {mutate: mutateAuthLogin, isPending: isPendingMutateAuthLogin} = useMutation({
-  mutationFn: async(values: ILoginForm) => {
-    return await axios.post('http://localhost:5000/auth', {
-      username: values.username, 
-      password: values.password
-    })
-  }, 
-  onSuccess: (res) => {
-    console.log(res)
-  }, 
-  onError: (err) => {
-    console.log(err)
-  }
-})
+  const {
+    mutateAuthLogin, 
+    isPendingMutateAuthLogin
+  } = mutateAuthLoginHook()
 
   return (
     <main>
