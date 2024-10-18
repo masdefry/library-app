@@ -1,6 +1,8 @@
+'use client';
 import { HiOutlineHome } from 'react-icons/hi';
 import { BsPeople } from 'react-icons/bs';
 import { LuBookMinus } from 'react-icons/lu';
+import Link from 'next/link';
 
 const navigationLink = [
     {
@@ -31,10 +33,12 @@ export default function Sidebar(){
                 {
                     navigationLink.map((navigation, index) => {
                         return(
-                            <div key={index} className='flex items-center gap-2 md:gap-3'>
-                                {navigation.icon}
-                                <h1 className='text-lg md:text-xl font-thin'>{navigation.title}</h1>
-                            </div>
+                            <Link href={navigation.url} key={index} >
+                                <div className='flex items-center gap-2 md:gap-3'>
+                                        {navigation.icon}
+                                        <h1 className='text-lg md:text-xl font-thin'>{navigation.title}</h1>
+                                </div>
+                            </Link>
                         )
                     })
                 }
