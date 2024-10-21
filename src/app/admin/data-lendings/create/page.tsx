@@ -1,4 +1,42 @@
+'use client';
+import { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+
 export default function CreateLendingPage() {
+  const [dataMembers, setDataMembers] = useState([])
+  const [selectedMember, setSelectedMember] = useState([])
+
+  const {mutate: mutateFetchMember} = useMutation({
+    mutationFn: async(value) => {
+      return await axios.get('http://localhost:5000/members/search', {
+        params: {
+          data: value
+        }
+      })
+    },
+    onSuccess: (res) => {
+      setDataMembers(res.data.data)
+    },
+    onError: (err) => {
+      console.log(err)
+    }
+  })
+
+  const debouncedInputFindMember = useDebouncedCallback(
+    (value) => {
+      mutateFetchMember(value)
+      // Http Request, findMember
+    },
+    3000
+  );
+
+  const onSelectMember = (member) => {
+    setSelectedMember([{...member}])
+    setDataMembers([])
+  }
+
     return (
       <main>
         <section>
@@ -13,16 +51,24 @@ export default function CreateLendingPage() {
               </div>
               <div className='relative'>
                 <input
+                  onChange={(e) => debouncedInputFindMember(e.target.value)}
                   type='text'
                   placeholder='Type member id / email / phone number'
                   className='input input-bordered border-blue-500 text-blue-500 w-full'
                 />
                 <ul className='absolute z-10 bg-white border border-gray-300 w-full mt-1 rounded-md shadow-lg max-h-60 overflow-auto'>
-                  <li
-                    className='px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-                  >
-                    Sangalabror Pujianto
-                  </li>
+                  {
+                    dataMembers?.map((member, index) => {
+                      return(
+                        <li
+                          className='px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white'
+                          onClick={() => onSelectMember(member)}
+                        >
+                          {member.phone_number} - {member.first_name} {member.last_name}
+                        </li>
+                      )
+                    })
+                  }
                 </ul>
               </div>
             </label>
@@ -33,16 +79,16 @@ export default function CreateLendingPage() {
                     <tr>
                         <th>No</th>
                         <th>Name</th>
-                        <th>Job</th>
-                        <th>Favorite Color</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
                     </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <th>1</th>
-                            <td>Cy Ganderton</td>
-                            <td>Quality Control Specialist</td>
-                            <td>Blue</td>
+                            <td>{selectedMember[0]?.first_name}{selectedMember[0]?.last_name}</td>
+                            <td>{selectedMember[0]?.phone_number}</td>
+                            <td>{selectedMember[0]?.email}</td>
                         </tr>
                     </tbody>
                 </table>
