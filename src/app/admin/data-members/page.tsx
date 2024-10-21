@@ -1,4 +1,27 @@
+'use client';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useState } from 'react';
+
 export default function DataMembersPage(){
+    const [page, setPage] = useState(1)
+    const [limitData, setLimitData] = useState(2)
+
+    const {data: dataMembers} = useQuery({
+        queryKey: ['getMembers', page], 
+        queryFn: async() => {
+            const res = await axios.get('http://localhost:5000/members', {
+                params: {
+                    page, 
+                    limit_data: limitData
+                }
+            })
+            return res.data.data
+        }
+    })
+
+    console.log(dataMembers)
+
     return(
         <main>
             <div className='grid grid-cols-12 gap-3 md:gap-5'>
@@ -28,39 +51,45 @@ export default function DataMembersPage(){
                     <thead>
                     <tr>
                         <th>No</th>
-                        <th>Name</th>
-                        <th>Job</th>
-                        <th>Favorite Color</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Phone Number</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <th>1</th>
-                        <td>Cy Ganderton</td>
-                        <td>Quality Control Specialist</td>
-                        <td>Blue</td>
-                    </tr>
-                    <tr>
-                        <th>2</th>
-                        <td>Hart Hagerty</td>
-                        <td>Desktop Support Technician</td>
-                        <td>Purple</td>
-                    </tr>
-                    <tr>
-                        <th>3</th>
-                        <td>Brice Swyre</td>
-                        <td>Tax Accountant</td>
-                        <td>Red</td>
-                    </tr>
+                    {
+                        dataMembers?.members.map((member, index) => {
+                            return(
+                                <tr>
+                                    <th>{((limitData*page)-1) + index}</th>
+                                    <td>{member?.first_name}</td>
+                                    <td>{member?.last_name}</td>
+                                    <td>{member?.phone_number}</td>
+                                </tr>
+                            )
+                        })
+                    }
                     </tbody>
                 </table>
                 <div className='join flex justify-center py-5'>
-                    <button className='join-item btn btn-sm'>1</button>
-                    <button className='join-item btn btn-sm btn-active bg-blue-500 text-white'>2</button>
-                    <button className='join-item btn btn-sm'>3</button>
-                    <button className='join-item btn btn-sm'>4</button>
+                    {
+                        Array(dataMembers?.totalPage).fill(0).map((_, index) => {
+                            return(
+                                <button className='join-item btn btn-sm' onClick={() => setPage(index+1)}>{index+1}</button>
+                            )
+                        })
+                    }
                 </div>
                 </div>
         </main>
     )
 }
+
+
+
+
+// totalPage: 2
+
+// pagination FE: 1, 2
+
+// [0,0]
